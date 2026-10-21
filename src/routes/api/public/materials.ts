@@ -12,8 +12,12 @@ export const Route = createFileRoute("/api/public/materials")({
     handlers: {
       OPTIONS: async () => new Response(null, { status: 204, headers: cors }),
       GET: async ({ request }) => {
-        const p = new URL(request.url).searchParams;
-        const items = filterMaterials({ search: p.get("search"), category: p.get("category"), maxPrice: p.get("maxPrice") });
+        const url = new URL(request.url);
+        const p = url.searchParams;
+        const items = filterMaterials({ search: p.get("search"), category: p.get("category"), maxPrice: p.get("maxPrice") }).map(({ imagePath, ...material }) => ({
+          ...material,
+          imageUrl: new URL(imagePath, url.origin).href,
+        }));
         return Response.json({ count: items.length, currency: "THB", items }, { headers: cors });
       },
     },

@@ -24,3 +24,10 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+
+## Material images for Botnoi / LINE
+
+GET `/api/public/materials` returns `name`, `price`, `unit`, and an absolute `imageUrl` in each item. Existing filters (`search`, `category`, `maxPrice`) are unchanged. Images are the existing category illustrations, not individual product photos.
+
+After publishing, test `/api/public/materials?search=MAT004` and open the returned `imageUrl` in a browser. Use `name` for the product title and `imageUrl` for the image in Botnoi / LINE. Configuring a Flex Message in Botnoi is a separate step.

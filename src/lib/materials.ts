@@ -7,17 +7,18 @@ export type Material = {
   unit: string;
   usage: string;
   caution: string;
+  imagePath: string;
 };
 
 export const MATERIALS: Material[] = [
-  { id: "MAT001", name: "MDF 18 มม.", category: "แผ่นไม้", size: "1220×2440×18 มม.", price: 750, unit: "แผ่น", usage: "งานภายในแห้งและหน้าบานพ่นสี", caution: "ต้องปิดผิว หลีกเลี่ยงน้ำ" },
-  { id: "MAT002", name: "ปาร์ติเคิลเมลามีนขาว 18 มม.", category: "แผ่นไม้", size: "1220×2440×18 มม.", price: 890, unit: "แผ่น", usage: "โครงตู้และชั้นภายใน", caution: "ปิดขอบตัด หลีกเลี่ยงน้ำขัง" },
-  { id: "MAT003", name: "ไม้อัดยาง 15 มม.", category: "แผ่นไม้", size: "1220×2440×15 มม.", price: 1050, unit: "แผ่น", usage: "ส่วนประกอบเฟอร์นิเจอร์", caution: "ตรวจเกรดและงานปิดผิว ไม่อ้างว่ากันน้ำ" },
-  { id: "MAT004", name: "HMR 18 มม.", category: "แผ่นไม้", size: "1220×2440×18 มม.", price: 1250, unit: "แผ่น", usage: "งานภายในที่ต้องการทนชื้น", caution: "ทนชื้นไม่ใช่กันน้ำ ต้องปิดผิวและขอบ" },
-  { id: "MAT005", name: "ลามิเนตลายโอ๊ก", category: "วัสดุปิดผิว", size: "1220×2440×0.8 มม.", price: 650, unit: "แผ่น", usage: "ปิดผิวตกแต่ง", caution: "ต้องมีวัสดุฐาน ไม่ใช่แผ่นโครงสร้าง" },
-  { id: "MAT006", name: "ขอบ PVC ขาว", category: "วัสดุปิดขอบ", size: "22×1 มม. ยาว 10 เมตร", price: 180, unit: "ม้วน", usage: "ปิดขอบแผ่น", caution: "ตรวจความกว้างและสีให้ตรงงาน" },
-  { id: "MAT007", name: "บานพับปิดนุ่ม", category: "อุปกรณ์", size: "ถ้วย 35 มม.", price: 95, unit: "ชิ้น", usage: "หน้าบานตู้", caution: "ตรวจระยะเจาะและรูปแบบติดตั้ง" },
-  { id: "MAT008", name: "รางลิ้นชักปิดนุ่ม", category: "อุปกรณ์", size: "ยาว 450 มม.", price: 420, unit: "คู่", usage: "ลิ้นชัก", caution: "ตรวจพื้นที่ติดตั้งและพิกัดน้ำหนักจากผู้ผลิต" },
+  { id: "MAT001", imagePath: "/images/materials/cat-board.jpg", name: "MDF 18 มม.", category: "แผ่นไม้", size: "1220×2440×18 มม.", price: 750, unit: "แผ่น", usage: "งานภายในแห้งและหน้าบานพ่นสี", caution: "ต้องปิดผิว หลีกเลี่ยงน้ำ" },
+  { id: "MAT002", imagePath: "/images/materials/cat-board.jpg", name: "ปาร์ติเคิลเมลามีนขาว 18 มม.", category: "แผ่นไม้", size: "1220×2440×18 มม.", price: 890, unit: "แผ่น", usage: "โครงตู้และชั้นภายใน", caution: "ปิดขอบตัด หลีกเลี่ยงน้ำขัง" },
+  { id: "MAT003", imagePath: "/images/materials/cat-board.jpg", name: "ไม้อัดยาง 15 มม.", category: "แผ่นไม้", size: "1220×2440×15 มม.", price: 1050, unit: "แผ่น", usage: "ส่วนประกอบเฟอร์นิเจอร์", caution: "ตรวจเกรดและงานปิดผิว ไม่อ้างว่ากันน้ำ" },
+  { id: "MAT004", imagePath: "/images/materials/cat-board.jpg", name: "HMR 18 มม.", category: "แผ่นไม้", size: "1220×2440×18 มม.", price: 1250, unit: "แผ่น", usage: "งานภายในที่ต้องการทนชื้น", caution: "ทนชื้นไม่ใช่กันน้ำ ต้องปิดผิวและขอบ" },
+  { id: "MAT005", imagePath: "/images/materials/cat-surface.jpg", name: "ลามิเนตลายโอ๊ก", category: "วัสดุปิดผิว", size: "1220×2440×0.8 มม.", price: 650, unit: "แผ่น", usage: "ปิดผิวตกแต่ง", caution: "ต้องมีวัสดุฐาน ไม่ใช่แผ่นโครงสร้าง" },
+  { id: "MAT006", imagePath: "/images/materials/cat-edge.jpg", name: "ขอบ PVC ขาว", category: "วัสดุปิดขอบ", size: "22×1 มม. ยาว 10 เมตร", price: 180, unit: "ม้วน", usage: "ปิดขอบแผ่น", caution: "ตรวจความกว้างและสีให้ตรงงาน" },
+  { id: "MAT007", imagePath: "/images/materials/cat-hardware.jpg", name: "บานพับปิดนุ่ม", category: "อุปกรณ์", size: "ถ้วย 35 มม.", price: 95, unit: "ชิ้น", usage: "หน้าบานตู้", caution: "ตรวจระยะเจาะและรูปแบบติดตั้ง" },
+  { id: "MAT008", imagePath: "/images/materials/cat-hardware.jpg", name: "รางลิ้นชักปิดนุ่ม", category: "อุปกรณ์", size: "ยาว 450 มม.", price: 420, unit: "คู่", usage: "ลิ้นชัก", caution: "ตรวจพื้นที่ติดตั้งและพิกัดน้ำหนักจากผู้ผลิต" },
 ];
 
 export const CATEGORIES = ["แผ่นไม้", "วัสดุปิดผิว", "วัสดุปิดขอบ", "อุปกรณ์"];
