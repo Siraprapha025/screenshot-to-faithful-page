@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiMcpRouteImport } from './routes/api/mcp'
 import { Route as ApiPublicMaterialsRouteImport } from './routes/api/public/materials'
 import { Route as ApiPublicOrdersRouteImport } from './routes/api/public/orders'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMcpRoute = ApiMcpRouteImport.update({
+  id: '/api/mcp',
+  path: '/api/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicMaterialsRoute = ApiPublicMaterialsRouteImport.update({
@@ -31,30 +37,39 @@ const ApiPublicOrdersRoute = ApiPublicOrdersRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/mcp': typeof ApiMcpRoute
   '/api/public/materials': typeof ApiPublicMaterialsRoute
   '/api/public/orders': typeof ApiPublicOrdersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/mcp': typeof ApiMcpRoute
   '/api/public/materials': typeof ApiPublicMaterialsRoute
   '/api/public/orders': typeof ApiPublicOrdersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/mcp': typeof ApiMcpRoute
   '/api/public/materials': typeof ApiPublicMaterialsRoute
   '/api/public/orders': typeof ApiPublicOrdersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/public/materials' | '/api/public/orders'
+  fullPaths: '/' | '/api/mcp' | '/api/public/materials' | '/api/public/orders'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/public/materials' | '/api/public/orders'
-  id: '__root__' | '/' | '/api/public/materials' | '/api/public/orders'
+  to: '/' | '/api/mcp' | '/api/public/materials' | '/api/public/orders'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/mcp'
+    | '/api/public/materials'
+    | '/api/public/orders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiMcpRoute: typeof ApiMcpRoute
   ApiPublicMaterialsRoute: typeof ApiPublicMaterialsRoute
   ApiPublicOrdersRoute: typeof ApiPublicOrdersRoute
 }
@@ -66,6 +81,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/mcp': {
+      id: '/api/mcp'
+      path: '/api/mcp'
+      fullPath: '/api/mcp'
+      preLoaderRoute: typeof ApiMcpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/materials': {
@@ -87,6 +109,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiMcpRoute: ApiMcpRoute,
   ApiPublicMaterialsRoute: ApiPublicMaterialsRoute,
   ApiPublicOrdersRoute: ApiPublicOrdersRoute,
 }
