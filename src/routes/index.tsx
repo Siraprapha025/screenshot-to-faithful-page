@@ -107,7 +107,7 @@ function MaterialsTab() {
               <h3 className="font-semibold">{m.name}</h3>
               <p className="text-xs text-muted-foreground">{m.size}</p>
               <p className="mt-1 text-xs"><span className="text-muted-foreground">ใช้:</span> {m.usage}</p>
-              <p className="text-xs text-warning"><span className="text-muted-foreground">ระวัง:</span> {m.caution}</p>
+              <p className="text-xs"><span className="text-muted-foreground">ระวัง:</span> {m.caution}</p>
               <p className="mt-1 font-bold text-primary">
                 {baht(m.price)} / {m.unit}
               </p>
