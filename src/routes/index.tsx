@@ -260,11 +260,35 @@ function ApiTab() {
   );
 }
 
+type Line = { id: string; q: string };
+
 function ApiCard({ s }: { s: Spec }) {
   const [origin, setOrigin] = useState("");
   useEffect(() => setOrigin(window.location.origin), []);
   const url = origin + s.path;
-  const [val, setVal] = useState(s.fields);
+  const isGet = s.method === "GET";
+  const all = useMaterials({});
+  // GET form
+  const [search, setSearch] = useState("MDF");
+  const [category, setCategory] = useState("");
+  const [maxPrice, setMaxPrice] = useState("1000");
+  // POST form
+  const [cName, setCName] = useState("ช่างสมชาย");
+  const [lines, setLines] = useState<Line[]>([{ id: "MAT001", q: "2" }, { id: "MAT007", q: "4" }]);
+  const [reqId, setReqId] = useState(newReq);
+  // raw JSON / query
+  const [raw, setRaw] = useState(s.fields);
+  const [useRaw, setUseRaw] = useState(false);
+
+  const query = new URLSearchParams(
+    Object.entries({ search: search.trim(), category, maxPrice: maxPrice.trim() }).filter(([, v]) => v),
+  ).toString();
+  const body = JSON.stringify(
+    { customerName: cName, requestId: reqId, items: lines.map((l) => ({ materialId: l.id, quantity: Number(l.q) })) },
+    null,
+    2,
+  );
+
   const [out, setOut] = useState<{ status: number; body: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -272,10 +296,13 @@ function ApiCard({ s }: { s: Spec }) {
   async function send() {
     setBusy(true);
     try {
-      const res =
-        s.method === "GET"
-          ? await fetch(url + (val.trim() ? "?" + val.trim().replace(/^\?/, "") : ""))
-          : await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: val });
+      let res: Response;
+      if (isGet) {
+        const q = useRaw ? raw.trim().replace(/^\?/, "") : query;
+        res = await fetch(url + (q ? "?" + q : ""));
+      } else {
+        res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: useRaw ? raw : body });
+      }
       const t = await res.text();
       let pretty = t;
       try {
@@ -287,6 +314,10 @@ function ApiCard({ s }: { s: Spec }) {
     }
     setBusy(false);
   }
+
+  const setLine = (i: number, patch: Partial<Line>) => setLines(lines.map((x, j) => (j === i ? { ...x, ...patch } : x)));
+  const box = "rounded-lg border border-border bg-background p-3";
+  const lbl = "block text-xs font-medium text-muted-foreground";
 
   return (
     <section className={card}>
@@ -305,25 +336,90 @@ function ApiCard({ s }: { s: Spec }) {
         </button>
       </div>
       <p className="mt-2 text-sm">{s.desc}</p>
-      {s.respExample && (
-        <>
-          <p className="mt-2 text-xs font-medium">ตัวอย่าง response (มี usage และ caution ทุกรายการ):</p>
-          <pre className="mt-1 max-h-64 overflow-auto rounded-lg bg-code p-3 font-mono text-xs text-code-foreground">{s.respExample}</pre>
-        </>
-      )}
-      <p className="mt-2 text-xs text-muted-foreground">ตัวอย่างอื่น: <code className="font-mono">{s.example}</code></p>
       <p className="mt-1 rounded-lg bg-muted p-2 text-xs">Botnoi Agent: {s.botnoi}</p>
-      <label className="mt-3 block text-sm font-medium">{s.method === "GET" ? "Query string" : "Request body (JSON)"}</label>
-      <textarea className={input + " mt-1 font-mono"} rows={s.method === "GET" ? 2 : 8} value={val} onChange={(e) => setVal(e.target.value)} />
-      <button className={btn + " mt-2"} onClick={send} disabled={busy}>
-        {busy ? "กำลังส่ง…" : "Send"}
-      </button>
-      {out && (
-        <div className="mt-3">
-          <p className={"text-sm font-semibold " + (out.status >= 200 && out.status < 300 ? "text-success" : "text-destructive")}>HTTP {out.status}</p>
-          <pre className="mt-1 max-h-80 overflow-auto rounded-lg bg-code p-3 font-mono text-xs text-code-foreground">{out.body}</pre>
+
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <div className={box}>
+          <h3 className="text-sm font-bold">ข้อมูลส่งเข้า (Request)</h3>
+          {isGet ? (
+            <div className="mt-2 space-y-2">
+              <label className={lbl}>คำค้น (search)
+                <input className={input + " mt-1"} value={search} onChange={(e) => setSearch(e.target.value)} placeholder="เช่น MDF, MAT007" />
+              </label>
+              <label className={lbl}>ประเภท (category)
+                <select className={input + " mt-1"} value={category} onChange={(e) => setCategory(e.target.value)}>
+                  <option value="">ทุกประเภท</option>
+                  {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                </select>
+              </label>
+              <label className={lbl}>ราคาสูงสุด (maxPrice)
+                <input className={input + " mt-1"} type="number" min={0} value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+              </label>
+              <p className="text-xs text-muted-foreground">Query ที่จะส่ง:</p>
+              <code className="block break-all rounded bg-code p-2 font-mono text-xs text-code-foreground">?{query}</code>
+            </div>
+          ) : (
+            <div className="mt-2 space-y-2">
+              <label className={lbl}>ชื่อสมมติ (customerName)
+                <input className={input + " mt-1"} value={cName} onChange={(e) => setCName(e.target.value)} />
+              </label>
+              <p className={lbl}>รายการสินค้า (items)</p>
+              {lines.map((l, i) => (
+                <div key={i} className="flex gap-2">
+                  <select className={input} value={l.id} onChange={(e) => setLine(i, { id: e.target.value })}>
+                    {all?.map((m) => <option key={m.id} value={m.id}>{m.id} {m.name}</option>)}
+                  </select>
+                  <input className={input + " w-20"} type="number" min={1} step={1} value={l.q} aria-label="จำนวน" onChange={(e) => setLine(i, { q: e.target.value })} />
+                  {lines.length > 1 && (
+                    <button className={btn2} onClick={() => setLines(lines.filter((_, j) => j !== i))}>ลบ</button>
+                  )}
+                </div>
+              ))}
+              <button className={btn2} onClick={() => setLines([...lines, { id: "MAT001", q: "1" }])}>+ เพิ่มรายการ</button>
+              <label className={lbl}>requestId
+                <div className="mt-1 flex gap-2">
+                  <input className={input + " font-mono"} value={reqId} onChange={(e) => setReqId(e.target.value)} />
+                  <button className={btn2 + " whitespace-nowrap"} onClick={() => setReqId(newReq())}>สร้างใหม่</button>
+                </div>
+              </label>
+              <p className="text-xs text-muted-foreground">Body ที่จะส่ง:</p>
+              <pre className="max-h-48 overflow-auto rounded bg-code p-2 font-mono text-xs text-code-foreground">{body}</pre>
+            </div>
+          )}
+
+          <details className="mt-3 rounded-lg border border-border p-2" onToggle={(e) => setUseRaw((e.target as HTMLDetailsElement).open)}>
+            <summary className="cursor-pointer text-xs font-medium">สำหรับทดสอบ JSON</summary>
+            <p className="mt-1 text-xs text-muted-foreground">เมื่อเปิดส่วนนี้ ปุ่ม Send จะส่งค่าจากช่องนี้แทน · ตัวอย่าง: <code className="font-mono">{s.example}</code></p>
+            <textarea className={input + " mt-1 font-mono"} rows={isGet ? 2 : 8} value={raw} onChange={(e) => setRaw(e.target.value)} />
+          </details>
+
+          <button className={btn + " mt-3"} onClick={send} disabled={busy}>
+            {busy ? "กำลังส่ง…" : "Send"}
+          </button>
         </div>
-      )}
+
+        <div className={box}>
+          <h3 className="text-sm font-bold">ผลตอบกลับ (Response)</h3>
+          {out ? (
+            <>
+              <p className={"mt-2 text-sm font-semibold " + (out.status >= 200 && out.status < 300 ? "text-success" : "text-destructive")}>
+                HTTP {out.status} {out.status >= 200 && out.status < 300 ? "สำเร็จ" : out.status === 0 ? "เชื่อมต่อไม่ได้" : "ผิดพลาด"}
+              </p>
+              <pre className="mt-1 max-h-96 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-code p-3 font-mono text-xs text-code-foreground">{out.body}</pre>
+            </>
+          ) : (
+            <>
+              <p className="mt-2 text-xs text-muted-foreground">กด Send เพื่อดูผลจริง</p>
+              {s.respExample && (
+                <>
+                  <p className="mt-2 text-xs font-medium">ตัวอย่าง response (มี usage และ caution ทุกรายการ):</p>
+                  <pre className="mt-1 max-h-64 overflow-auto rounded-lg bg-code p-3 font-mono text-xs text-code-foreground">{s.respExample}</pre>
+                </>
+              )}
+            </>
+          )}
+        </div>
+      </div>
     </section>
   );
 }
