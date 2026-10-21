@@ -106,6 +106,8 @@ function MaterialsTab() {
               <p className="font-mono text-xs text-muted-foreground">{m.id} · {m.category}</p>
               <h3 className="font-semibold">{m.name}</h3>
               <p className="text-xs text-muted-foreground">{m.size}</p>
+              <p className="mt-1 text-xs"><span className="text-muted-foreground">ใช้:</span> {m.usage}</p>
+              <p className="text-xs"><span className="text-muted-foreground">ระวัง:</span> {m.caution}</p>
               <p className="mt-1 font-bold text-primary">
                 {baht(m.price)} / {m.unit}
               </p>
@@ -227,14 +229,15 @@ function OrderTab() {
   );
 }
 
-type Spec = { method: "GET" | "POST"; path: string; desc: string; fields: string; example: string; botnoi: string };
+type Spec = { method: "GET" | "POST"; path: string; desc: string; fields: string; example: string; botnoi: string; respExample?: string };
 const SPECS: Spec[] = [
   {
     method: "GET",
     path: MAT_PATH,
-    desc: "ค้นหาวัสดุ พารามิเตอร์ (ไม่บังคับ): search = ชื่อ/รหัส, category = ประเภท (แผ่นไม้, วัสดุปิดผิว, วัสดุปิดขอบ, อุปกรณ์), maxPrice = ราคาสูงสุด ไม่ส่งตัวกรองจะคืนทั้งหมด",
+    desc: "ค้นหาวัสดุ พารามิเตอร์ (ไม่บังคับ): search = ชื่อ/รหัส, category = ประเภท (แผ่นไม้, วัสดุปิดผิว, วัสดุปิดขอบ, อุปกรณ์), maxPrice = ราคาสูงสุด ไม่ส่งตัวกรองจะคืนทั้งหมด ทุก item มีฟิลด์ usage (การใช้งาน) และ caution (ข้อควรระวัง) สำหรับแนะนำสินค้า",
     fields: "search=MDF&maxPrice=1000",
     example: "?category=อุปกรณ์&maxPrice=200",
+    respExample: JSON.stringify({ count: 1, currency: "THB", items: [{ id: "MAT001", name: "MDF 18 มม.", category: "แผ่นไม้", size: "1220×2440×18 มม.", price: 750, unit: "แผ่น", usage: "งานภายในแห้งและหน้าบานพ่นสี", caution: "ต้องปิดผิว หลีกเลี่ยงน้ำ" }] }, null, 2),
     botnoi: "ตั้งเป็น Tool ชื่อ search_materials · Method GET · Query: search, category, maxPrice (string, optional) · ใช้เมื่อลูกค้าถามหาวัสดุหรือราคา",
   },
   {
@@ -302,6 +305,12 @@ function ApiCard({ s }: { s: Spec }) {
         </button>
       </div>
       <p className="mt-2 text-sm">{s.desc}</p>
+      {s.respExample && (
+        <>
+          <p className="mt-2 text-xs font-medium">ตัวอย่าง response (มี usage และ caution ทุกรายการ):</p>
+          <pre className="mt-1 max-h-64 overflow-auto rounded-lg bg-code p-3 font-mono text-xs text-code-foreground">{s.respExample}</pre>
+        </>
+      )}
       <p className="mt-2 text-xs text-muted-foreground">ตัวอย่างอื่น: <code className="font-mono">{s.example}</code></p>
       <p className="mt-1 rounded-lg bg-muted p-2 text-xs">Botnoi Agent: {s.botnoi}</p>
       <label className="mt-3 block text-sm font-medium">{s.method === "GET" ? "Query string" : "Request body (JSON)"}</label>
