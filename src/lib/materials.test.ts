@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { filterMaterials, priceOrder } from "./materials";
+import { MATERIALS, filterMaterials, priceOrder } from "./materials";
 
 describe("materials", () => {
+  it("every material has non-empty usage and caution", () => {
+    for (const m of MATERIALS) {
+      expect(m.usage.length).toBeGreaterThan(0);
+      expect(m.caution.length).toBeGreaterThan(0);
+    }
+  });
   it("returns all 8 without filters", () => expect(filterMaterials({})).toHaveLength(8));
   it("filters by maxPrice", () => expect(filterMaterials({ maxPrice: "500" }).map((m) => m.id)).toEqual(["MAT006", "MAT007", "MAT008"]));
   it("searches by id", () => expect(filterMaterials({ search: "mat004" })[0].id).toBe("MAT004"));
