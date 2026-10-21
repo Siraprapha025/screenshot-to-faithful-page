@@ -369,7 +369,7 @@ function ApiCard({ s }: { s: Spec }) {
                   <select className={input} value={l.id} onChange={(e) => setLine(i, { id: e.target.value })}>
                     {all?.map((m) => <option key={m.id} value={m.id}>{m.id} {m.name}</option>)}
                   </select>
-                  <input className={input + " w-20"} type="number" min={1} step={1} value={l.q} aria-label="จำนวน" onChange={(e) => setLine(i, { q: e.target.value })} />
+                  <input className={input.replace("w-full", "w-20 shrink-0")} type="number" min={1} step={1} value={l.q} aria-label="จำนวน" onChange={(e) => setLine(i, { q: e.target.value })} />
                   {lines.length > 1 && (
                     <button className={btn2} onClick={() => setLines(lines.filter((_, j) => j !== i))}>ลบ</button>
                   )}
